@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PROTECTED_PATHS = ["/admin", "/checkin", "/onboarding"];
+const PROTECTED_PATHS = ["/admin", "/dashboard", "/onboarding"];
 
 export async function updateSession(request: NextRequest) {
   // Supabase isn't configured yet in this environment — pass everything

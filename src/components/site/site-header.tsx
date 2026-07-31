@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const NAV = [
-  { label: "Product", href: "#modules" },
-  { label: "Capture layer", href: "#capture" },
-  { label: "Roles", href: "#roles" },
+  { label: "Features", href: "#features" },
+  { label: "How it works", href: "#how-it-works" },
+  { label: "Access", href: "#access" },
   { label: "Contact", href: "#contact" },
 ];
 

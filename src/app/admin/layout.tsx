@@ -24,7 +24,7 @@ export default async function AdminLayout({
 
   // Section 06: staff can't access the admin dashboard.
   if (employee.role === "staff") {
-    redirect("/checkin");
+    redirect("/dashboard");
   }
 
   const supabase = await createClient();

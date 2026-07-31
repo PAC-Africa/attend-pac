@@ -22,17 +22,18 @@ Engineering delivery: Gordian Knotz Technovation.
   down the page for prospective clients who aren't ready to self-serve.
 - **`/login`** — Supabase email/password auth. Signing up creates a new
   account with no organization attached yet; signing in routes you to
-  `/admin`, `/checkin`, or `/onboarding` depending on your role.
+  `/admin`, `/dashboard`, or `/onboarding` depending on your role.
 - **`/onboarding`** — shown to any signed-in user with no `employees` row.
   Lets them name an organization and become its `org_admin`, via a
   dedicated Postgres RPC (`create_organization_for_self`) that bootstraps
   one org + one default site + their own employee row atomically.
-- **`/checkin`** — the clock in/out flow. Geofenced (browser Geolocation
-  API), offline-queued (localStorage, synced on reconnect), with
-  server-side geofence re-validation on every submit. This is the "Web
-  Kiosk / QR" capture path from Section 04 — it shares the schema,
-  geofence math, and offline-queue logic the React Native (Expo) app will
-  use later.
+- **`/dashboard`** — the staff-facing dashboard. Clock in/out (geofenced,
+  browser Geolocation API, offline-queued via localStorage, server-side
+  geofence re-validation on every submit) is one card among several — this
+  week's shifts, recent attendance, and leave requests (submit + status)
+  all live here too. The clock-in flow is the "Web Kiosk / QR" capture
+  path from Section 04 — it shares the schema, geofence math, and
+  offline-queue logic the React Native (Expo) app will use later.
 - **`/admin`** — the admin dashboard. All of Overview, Sites, Staff,
   Schedule, and Devices now query and mutate real data:
   - **Overview** — today's present/late/absent/on-leave counts, an
@@ -47,7 +48,7 @@ Engineering delivery: Gordian Knotz Technovation.
     each with an auto-generated webhook secret (partially masked).
   - **Reports** and **Settings** are still stubs.
 - **`middleware.ts`** — refreshes the Supabase session and guards
-  `/admin/*`, `/checkin`, and `/onboarding` server-side, per Section 06.
+  `/admin/*`, `/dashboard`, and `/onboarding` server-side, per Section 06.
   Passes requests through untouched if Supabase env vars aren't set, so
   the marketing site keeps working either way.
 
@@ -154,7 +155,7 @@ npm run dev
    Realtime would make "Present today" genuinely live without a refresh.
 4. **Mobile app.** React Native (Expo) — separate codebase — for the
    native GPS + selfie check-in flow, reusing the same geofence/offline
-   approach as `/checkin`. The biometric device webhook bridge (the other
+   approach as `/dashboard`. The biometric device webhook bridge (the other
    half of Section 04's capture layer — actually receiving pushes from a
    registered terminal) is also unbuilt; `/admin/devices` only manages
    device *records*, not the inbound webhook endpoint yet.

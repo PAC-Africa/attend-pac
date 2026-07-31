@@ -57,7 +57,7 @@ function LoginForm() {
     if (!employee) {
       router.push("/onboarding");
     } else if (employee.role === "staff") {
-      router.push("/checkin");
+      router.push("/dashboard");
     } else {
       router.push("/admin");
     }

@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardHeader,
@@ -30,46 +29,41 @@ import { StatTiles } from "@/components/site/stat-tiles";
 import { HeroPreview } from "@/components/site/hero-preview";
 import { ContactForm } from "@/components/site/contact-form";
 
-const MODULES = [
+const FEATURES = [
   {
-    name: "Mobile check-in/out",
-    priority: "P0",
+    name: "Mobile clock in/out",
     description:
-      "GPS-geofenced clock in/out with optional selfie verification, offline queue with background sync.",
+      "Staff check in and out from their own phone. Location is confirmed automatically, and it keeps working without signal.",
   },
   {
-    name: "Biometric terminal integration",
-    priority: "P0",
+    name: "Fingerprint & face terminals",
     description:
-      "SDK/webhook integration accepting punches from ZKTeco-class fingerprint/face devices as an alternate input.",
+      "Connects to the biometric machines you already run on site — nothing to rip out and replace.",
   },
   {
     name: "Shift scheduling",
-    priority: "P0",
-    description: "Manager-built rosters, shift swaps/requests, conflict detection.",
+    description:
+      "Build rosters for every site and handle shift-swap requests without a spreadsheet.",
   },
   {
     name: "Admin dashboard",
-    priority: "P0",
     description:
-      "Multi-site view, live attendance status, exception alerts (late, absent, no-show).",
+      "See who's present, late, or absent at every site, as it happens — not the next morning.",
   },
   {
-    name: "Reporting & payroll export",
-    priority: "P0",
+    name: "Reports & payroll export",
     description:
-      "Timesheet reports, CSV/Excel export, direct integration hooks for payroll systems.",
+      "One-click timesheets, ready to hand to whatever payroll process you already use.",
   },
   {
     name: "Leave management",
-    priority: "P1",
-    description: "Leave types, approval workflow, balance tracking, calendar view.",
+    description:
+      "Leave requests, approvals, and balances — all in one place instead of scattered across chats.",
   },
   {
     name: "Overtime & attendance rules",
-    priority: "P1",
     description:
-      "Configurable overtime thresholds, late/early rules, rounding policy per site.",
+      "Configurable late/early rules and overtime thresholds, set per site.",
   },
 ] as const;
 
@@ -77,39 +71,35 @@ const CAPTURE_LAYER = [
   {
     icon: Smartphone,
     title: "Mobile app",
-    detail: "React Native. GPS + selfie, geofenced check-in, offline-first.",
+    detail:
+      "Staff clock in from their own phone. Works offline and syncs automatically once they're back online.",
   },
   {
     icon: Fingerprint,
     title: "Biometric terminal",
-    detail: "ZKTeco-class fingerprint/face device via SDK/webhook bridge.",
+    detail: "Keep using the fingerprint or face scanners you already have on site.",
   },
   {
     icon: QrCode,
     title: "Web kiosk / QR",
-    detail: "Shared tablet at fixed-site locations.",
+    detail: "A shared tablet at the entrance, for sites where staff don't carry a work phone.",
   },
 ] as const;
 
 const ROLES = [
   {
     role: "Staff",
-    can: "Clock in/out, view own attendance + schedule, submit leave",
-    cannot: "View other staff's data, edit schedules, access admin dashboard",
+    can: "Clock in/out, see their own attendance and schedule, request leave",
+    cannot: "See other staff's records, edit schedules, or open the admin dashboard",
   },
   {
     role: "Manager",
-    can: "Build/edit shifts for their site, approve leave, view site-level reports",
-    cannot: "Access other sites, change org billing/plan, add biometric devices",
+    can: "Everything Staff can do, plus build shifts and approve leave — for their own site",
+    cannot: "See or manage other sites, change billing, or add devices",
   },
   {
-    role: "Org Admin",
-    can: "Full access within their organization: all sites, staff, payroll export, billing",
-    cannot: "Access other organizations' data",
-  },
-  {
-    role: "Super Admin",
-    can: "Full platform access: all organizations, plan management, support tooling",
+    role: "Admin",
+    can: "Full access across every site: staff, schedules, devices, billing, and reports",
     cannot: "—",
   },
 ] as const;
@@ -132,10 +122,11 @@ export default function Home() {
               the office.
             </h1>
             <p className="mt-6 max-w-lg text-muted-foreground">
-              Cloud-native, mobile-first attendance for Kenya&apos;s deskless
-              workforce — geofenced mobile check-in, ZKTeco/Hikvision-class
-              biometric terminals, and shift scheduling in one dashboard your
-              site managers will actually open.
+              Built for teams whose people aren&apos;t at a desk — security
+              guards, drivers, site crews. Staff clock in from their own
+              phone or a fingerprint scanner you already have, and managers
+              see who&apos;s actually on site, in real time — not a stack of
+              timesheets to reconcile at month end.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href="#contact">
@@ -143,7 +134,7 @@ export default function Home() {
                   Request a pilot <ArrowRight />
                 </Button>
               </a>
-              <a href="#modules">
+              <a href="#features">
                 <Button size="lg" variant="outline">
                   See what&apos;s included
                 </Button>
@@ -159,55 +150,40 @@ export default function Home() {
         <StatTiles
           className="mt-16"
           tiles={[
-            { value: "4", label: "Reference systems benchmarked" },
-            { value: "7", label: "Core modules" },
-            { value: "6", label: "Payment models evaluated" },
-            { value: "P0", label: "Company priority" },
+            { value: "3", label: "Ways to clock in" },
+            { value: "2", label: "Weeks to launch" },
+            { value: "24/7", label: "Live visibility" },
+            { value: "1", label: "Dashboard for every site" },
           ]}
         />
       </section>
 
-      {/* v1 Core Modules */}
-      <section id="modules" className="mx-auto max-w-6xl px-6 py-16">
-        <div className="flex items-baseline justify-between">
-          <h2 className="font-serif text-3xl">
-            v1 core <span className="italic text-primary">modules</span>
-          </h2>
-          <span className="font-label text-muted-foreground hidden md:block">
-            Section 03 · Product scope
-          </span>
-        </div>
+      {/* Features */}
+      <section id="features" className="mx-auto max-w-6xl px-6 py-16">
+        <h2 className="font-serif text-3xl">
+          What&apos;s <span className="italic text-primary">included</span>
+        </h2>
         <Separator className="mt-4 mb-8" />
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {MODULES.map((mod) => (
-            <Card key={mod.name}>
+          {FEATURES.map((f) => (
+            <Card key={f.name}>
               <CardHeader>
-                <div className="flex items-start justify-between gap-3">
-                  <CardTitle>{mod.name}</CardTitle>
-                  <Badge variant={mod.priority === "P0" ? "attention" : "outline"}>
-                    {mod.priority}
-                  </Badge>
-                </div>
+                <CardTitle>{f.name}</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription>{mod.description}</CardDescription>
+                <CardDescription>{f.description}</CardDescription>
               </CardContent>
             </Card>
           ))}
         </div>
       </section>
 
-      {/* Capture layer */}
-      <section id="capture" className="mx-auto max-w-6xl px-6 py-16">
-        <div className="flex items-baseline justify-between">
-          <h2 className="font-serif text-3xl">
-            Where attendance <span className="italic text-primary">happens</span>
-          </h2>
-          <span className="font-label text-muted-foreground hidden md:block">
-            Section 04 · Technical architecture
-          </span>
-        </div>
+      {/* How it works / capture layer */}
+      <section id="how-it-works" className="mx-auto max-w-6xl px-6 py-16">
+        <h2 className="font-serif text-3xl">
+          How staff <span className="italic text-primary">clock in</span>
+        </h2>
         <Separator className="mt-4 mb-8" />
 
         <div className="grid gap-4 md:grid-cols-3">
@@ -225,16 +201,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Roles */}
-      <section id="roles" className="mx-auto max-w-6xl px-6 py-16">
-        <div className="flex items-baseline justify-between">
-          <h2 className="font-serif text-3xl">
-            Roles, auth &amp; <span className="italic text-primary">permissions</span>
-          </h2>
-          <span className="font-label text-muted-foreground hidden md:block">
-            Section 06 · RLS, org_id first
-          </span>
-        </div>
+      {/* Access */}
+      <section id="access" className="mx-auto max-w-6xl px-6 py-16">
+        <h2 className="font-serif text-3xl">
+          Who sees <span className="italic text-primary">what</span>
+        </h2>
+        <p className="mt-4 max-w-lg text-muted-foreground">
+          Every account only sees what it needs to. Access is set by role,
+          not by who remembered to ask.
+        </p>
         <Separator className="mt-4 mb-8" />
 
         <Table>

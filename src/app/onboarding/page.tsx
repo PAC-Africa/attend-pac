@@ -17,7 +17,7 @@ export default async function OnboardingPage() {
 
   const employee = await getEmployeeContext();
   if (employee) {
-    redirect(employee.role === "staff" ? "/checkin" : "/admin");
+    redirect(employee.role === "staff" ? "/dashboard" : "/admin");
   }
 
   return (
