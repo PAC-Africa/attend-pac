@@ -139,3 +139,4 @@ npm run dev
 6. Resolve the resourcing conflict flagged in the proposal (Section 01/08)
    before committing to timing on any of the above.
 "# attend-pac" 
+"# attend-pac" 
