@@ -33,11 +33,19 @@ Engineering delivery: Gordian Knotz Technovation.
   Kiosk / QR" capture path from Section 04 — it shares the schema,
   geofence math, and offline-queue logic the React Native (Expo) app will
   use later.
-- **`/admin`** — the admin dashboard. Overview now queries **real** data:
-  today's present/late/absent/on-leave counts, an exceptions table, and
-  per-site check-in ratios, all computed from `attendance_events` +
-  `leave_requests`. Sites/Staff/Schedule/Devices/Reports/Settings are
-  still UI stubs — the tables exist, the screens don't yet.
+- **`/admin`** — the admin dashboard. All of Overview, Sites, Staff,
+  Schedule, and Devices now query and mutate real data:
+  - **Overview** — today's present/late/absent/on-leave counts, an
+    exceptions table, per-site check-in ratios.
+  - **Sites** — list + add/delete, each showing staff and device counts.
+  - **Staff** — roster with role/site, an "Invite staff" flow that sends a
+    real Supabase Auth email invite and links the account, and remove.
+  - **Schedule** — next 14 days of shifts grouped by day, add/delete.
+    Managers can only write shifts at their own site (enforced by RLS, not
+    just the UI).
+  - **Devices** — registered biometric terminals per site, register/remove,
+    each with an auto-generated webhook secret (partially masked).
+  - **Reports** and **Settings** are still stubs.
 - **`middleware.ts`** — refreshes the Supabase session and guards
   `/admin/*`, `/checkin`, and `/onboarding` server-side, per Section 06.
   Passes requests through untouched if Supabase env vars aren't set, so
@@ -52,17 +60,29 @@ Engineering delivery: Gordian Knotz Technovation.
    each file into the SQL editor:
    - `supabase/migrations/0001_init_schema.sql` — schema + RLS
    - `supabase/migrations/0002_self_serve_signup.sql` — the onboarding RPC
+   - `supabase/migrations/0003_fix_super_admin_scope.sql` — RLS fix: an
+     earlier bug scoped `super_admin` to their own org on most tables
+     (should see *all* orgs, per Section 06), and `org_admin`'s "manage"
+     policies on shifts/attendance_summary/devices/payroll had no org_id
+     check at all (real cross-tenant write bug). Fixed here.
+   - `supabase/migrations/0004_manager_shift_access.sql` — RLS fix: 0003
+     only gave org_admin/super_admin write access to shifts, leaving out
+     managers entirely, despite Section 06 explicitly giving managers
+     "build/edit shifts for their site." Added, scoped to their own site.
 4. Run `supabase/seed.sql` — creates one demo org ("Alpha Pride Security")
    and one demo site ("Two Rivers Mall", Nairobi CBD coordinates).
-5. Link your own account to that org as you already did, **or** just sign
-   up via `/login` → "Sign up" and go through `/onboarding` to create your
-   own organization instead — either works now.
+5. Sign up via `/login` → "Sign up" with whichever email you want as your
+   admin account, then run `supabase/setup-admin.sql` in the SQL editor —
+   it links that account as `org_admin` of the demo org directly (skipping
+   the auto-created empty org `/onboarding` would otherwise give you), so
+   signing in immediately shows the fully populated dashboard.
 
 ### Populating a realistic demo
 
 Once the schema and your account are set up, seed a full demo dataset —
-more sites, ~14 fake staff accounts, and a week of realistic
-present/late/absent/on-leave attendance history:
+more sites, one biometric device per site, ~14 fake staff accounts, a week
+of realistic present/late/absent/on-leave attendance history, and the next
+7 days of scheduled shifts:
 
 ```bash
 node --env-file=.env.local scripts/seed-demo-data.mjs
@@ -71,12 +91,16 @@ node --env-file=.env.local scripts/seed-demo-data.mjs
 This needs `SUPABASE_SERVICE_ROLE_KEY` (already in your `.env.local`) since
 it creates real `auth.users` via the Admin API — that's also why it has to
 run on your machine rather than in a sandboxed build environment. It's
-safe to re-run. It prints a couple of demo staff logins
-(password `Demo1234!`) at the end if you want to try `/checkin` as one of
-them too.
+safe to re-run — it skips anything that already exists by name/email, but
+will add another week of attendance history and another 7 days of shifts
+each time (harmless for a demo).
+
+If you've already run an earlier version of this script, just re-run it —
+it'll fill in the devices and shifts it didn't create before.
 
 After seeding, sign in as your own (org_admin) account and open `/admin` —
-the Overview page should be fully populated.
+Overview, Sites, Staff, Schedule, and Devices should all be fully
+populated.
 
 ## Brand system
 
@@ -120,23 +144,22 @@ npm run dev
 ## Next steps
 
 1. **The "late" rule is a placeholder.** `src/lib/attendance.ts` currently
-   flags anyone checking in after 7:15 AM org-wide. Once the scheduling
-   module exists, compare against each employee's actual `shifts.start_at`
-   instead.
-2. **Staff provisioning UI.** New employees still get added via SQL
-   (or the seed script's fake accounts). Section 06 assumes org_admins add
-   staff through the product — build that in `/admin/staff` before
-   onboarding a real client.
+   flags anyone checking in after 7:15 AM org-wide. Once shift-aware
+   scheduling logic is added, compare against each employee's actual
+   `shifts.start_at` instead.
+2. **Reports and Settings are still stubs.** Reports needs CSV/Excel
+   export (Section 03); Settings needs site geofence editing (currently
+   add/delete only, no edit) and org profile/billing.
 3. **Realtime.** `/admin` re-queries on page load; wiring Supabase
    Realtime would make "Present today" genuinely live without a refresh.
 4. **Mobile app.** React Native (Expo) — separate codebase — for the
    native GPS + selfie check-in flow, reusing the same geofence/offline
-   approach as `/checkin`. Biometric terminal integration (SDK/webhook
-   bridge) is also a separate build.
-5. **Scheduling, leave approval, reporting.** `shifts`, `leave_requests`,
-   and `payroll_exports` have schema + RLS but no UI — `/admin/schedule`,
-   the leave side of `/admin/staff`, and `/admin/reports` are still stubs.
+   approach as `/checkin`. The biometric device webhook bridge (the other
+   half of Section 04's capture layer — actually receiving pushes from a
+   registered terminal) is also unbuilt; `/admin/devices` only manages
+   device *records*, not the inbound webhook endpoint yet.
+5. **Multi-org for super_admin.** The RLS now correctly lets `super_admin`
+   see every org, but there's no UI yet to switch between them — only
+   relevant once there's a second real client org on the platform.
 6. Resolve the resourcing conflict flagged in the proposal (Section 01/08)
    before committing to timing on any of the above.
-"# attend-pac" 
-"# attend-pac" 
