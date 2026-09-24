@@ -21,9 +21,3 @@ Workforce attendance & time management platform — PAC Africa Technology Divisi
     just the UI).
   - **Devices** — registered biometric terminals per site, 
 
-   device *records*, not the inbound webhook endpoint yet.
-5. **Multi-org for super_admin.** The RLS now correctly lets `super_admin`
-   see every org, but there's no UI yet to switch between them — only
-   relevant once there's a second real client org on the platform.
-6. Resolve the resourcing conflict flagged in the proposal (Section 01/08)
-   before committing to timing on any of the above.
