@@ -1,7 +1,7 @@
 # AttendPAC
 
 Workforce attendance & time management platform — PAC Africa Technology Division.
-Engineering delivery: Gordian Knotz Technovation.
+
 
 ## Stack
 
